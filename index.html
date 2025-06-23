@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GHAMart - Great Heights Academy Marketplace</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="assets/logo/icon.png" alt="GHAMart Logo">
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="#categories"><i class="fas fa-th"></i>Categories</a>
+                <a href="#products"><i class="fas fa-shopping-bag"></i>Products</a>
+                <a href="#about"><i class="fas fa-info-circle"></i>About</a>
+                <a href="#" id="exploreAIBtn"><i class="fas fa-robot"></i>AI Features</a>
+                <a href="#" id="accountBtn"><i class="fas fa-user"></i>Account</a>
+                <a href="#" id="cartBtn"><i class="fas fa-shopping-cart"></i>Cart</a>
+            </div>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search products...">
+                <i class="fas fa-search search-icon"></i>
+                <button id="voiceSearchBtn" class="voice-search-btn">
+                    <i class="fas fa-microphone"></i>
+                </button>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-slider">
+            <div class="slide active">
+                <img src="assets/hero-session/hero1.jpg" alt="Hero Image 1">
+                <div class="hero-content">
+                    <h1>Welcome to GHAMart</h1>
+                    <p>Your one-stop shop for quality products</p>
+                    <a href="#products" class="cta-button">Shop Now</a>
+                </div>
+            </div>
+            <div class="slide">
+                <img src="assets/hero-session/hero2.jpg" alt="Hero Image 2">
+                <div class="hero-content">
+                    <h1>Discover Amazing Products</h1>
+                    <p>Find the best deals and unique items</p>
+                    <a href="#products" class="cta-button">Explore</a>
+                </div>
+            </div>
+            <div class="slide">
+                <img src="assets/hero-session/hero3.jpg" alt="Hero Image 3">
+                <div class="hero-content">
+                    <h1>Quality Assured</h1>
+                    <p>Shop with confidence</p>
+                    <a href="#products" class="cta-button">Learn More</a>
+                </div>
+            </div>
+            <div class="slide">
+                <img src="assets/hero-session/hero4.jpg" alt="Hero Image 4">
+                <div class="hero-content">
+                    <h1>Special Offers</h1>
+                    <p>Don't miss out on our exclusive deals</p>
+                    <a href="#products" class="cta-button">View Offers</a>
+                </div>
+            </div>
+            <button class="slider-btn prev-btn">&lt;</button>
+            <button class="slider-btn next-btn">&gt;</button>
+            <div class="slider-dots"></div>
+        </div>
+    </section>
+
+    <!-- AI Features Section -->
+    <section id="aiFeatures" class="ai-features" style="display:none;">
+        <h2>AI-Powered Solutions</h2>
+        <div class="ai-features-grid">
+            <div class="ai-feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-kiwi-bird"></i>
+                </div>
+                <h3>Poultry Health Assistant</h3>
+                <p>AI-powered disease detection and health monitoring for your poultry farm using advanced image recognition.</p>
+                <a href="poultry-health.html" class="feature-link">
+                    <span>Open Assistant</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="ai-feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-fish"></i>
+                </div>
+                <h3>Fish Health Monitor</h3>
+                <p>Real-time water quality analysis and fish health monitoring system.</p>
+                <a href="fish-health.html" class="feature-link">
+                    <span>Learn More</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="ai-feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-balance-scale"></i>
+                </div>
+                <h3>Smart Price Comparison</h3>
+                <p>Compare our prices with major Nigerian e-commerce platforms in real-time using AI-powered price tracking.</p>
+                <a href="javascript:void(0)" class="feature-link" id="priceCompareBtn">
+                    <span>Compare Now</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section id="categories" class="categories">
+        <h2>Our Product Categories</h2>
+        <div class="category-grid">
+            <div class="category-card" data-category="all">
+                <img src="assets/hero-session/hero1.jpg" alt="All Products">
+                <h3>All Products</h3>
+            </div>
+            <div class="category-card" data-category="art">
+                <img src="assets/Art/Pencil work 1000.jpg" alt="Art">
+                <h3>Art</h3>
+            </div>
+            <div class="category-card" data-category="diy">
+                <img src="assets/DIY/bonnet 2000.jpg" alt="DIY">
+                <h3>DIY</h3>
+            </div>
+            <div class="category-card" data-category="entrepreneurship">
+                <img src="assets/Entrepreneurship/Hypo 1000.jpg" alt="Entrepreneurship">
+                <h3>Entrepreneurship</h3>
+            </div>
+            <div class="category-card" data-category="home-makers">
+                <img src="assets/Home makers/Beef jerky 2000.jpg" alt="Home Makers">
+                <h3>Home Makers</h3>
+            </div>
+            <div class="category-card" data-category="young-farmers">
+                <img src="assets/Young farmers/Broilers 12000.jpg" alt="Young Farmers">
+                <h3>Young Farmers</h3>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="products">
+        <h2>Featured Products</h2>
+        <div class="product-grid" id="productGrid">
+            <!-- Products will be dynamically loaded here -->
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <h2>About GHAMart</h2>
+        <div class="about-content">
+            <p>GHAMart is an innovative e-commerce platform showcasing the entrepreneurial spirit of Great Heights Academy students. We promote creativity, innovation, and sustainable business practices through technology and AI.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>GHAMart</h3>
+                <p>Great Heights Academy's Marketplace</p>
+                <h3>Contact</h3>
+                <p>+2348112598270</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="#home">Home</a>
+                <a href="#categories">Categories</a>
+                <a href="#about">About</a>
+            </div>
+            <div class="footer-section">
+                <h3>Connect With Us</h3>
+                <div class="social-icons">
+                    <a href="https://web.facebook.com/ghaabuja/?_rdc=1&_rdr#"><i class="fab fa-facebook"></i>gha_abuja</a>
+                    <a href="https://x.com/gha_abuja/"><i class="fab fa-twitter"></i>gha_abuja</a>
+                    <a href="https://www.instagram.com/gha_abuja/?hl=en"><i class="fab fa-instagram">gha_abuja</i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 GHAMart. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-body">
+                <div class="modal-image">
+                    <div class="zoom-controls">
+                        <button class="zoom-btn zoom-in"><i class="fas fa-search-plus"></i></button>
+                        <button class="zoom-btn zoom-out"><i class="fas fa-search-minus"></i></button>
+                    </div>
+                    <img src="" alt="Product Image" id="modalProductImage">
+                </div>
+                <div class="modal-details">
+                    <h2 id="modalProductName"></h2>
+                    <p class="price" id="modalProductPrice"></p>
+                    <p class="description" id="modalProductDescription"></p>
+                    <div class="quantity-selector">
+                        <button class="quantity-btn minus">-</button>
+                        <input type="number" value="1" min="1" id="modalProductQuantity">
+                        <button class="quantity-btn plus">+</button>
+                    </div>
+                    <button class="cta-button add-to-cart-modal">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shopping Cart Sidebar -->
+    <div id="cartSidebar" class="cart-sidebar">
+        <div class="cart-header">
+            <h3>Shopping Cart</h3>
+            <button class="close-cart">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Cart items will be added here dynamically -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">₦0</span>
+            </div>
+            <button class="checkout-btn">
+                <div class="loading-spinner"></div>
+                <span>Place Order</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Cart Confirmation Modal -->
+    <div class="cart-confirmation-modal">
+        <div class="cart-confirmation-content">
+            <h3>Item Added to Cart!</h3>
+            <div class="product-added">
+                <img src="" alt="Product Image" id="addedProductImage">
+                <h4 id="addedProductName"></h4>
+                <p class="price" id="addedProductPrice"></p>
+            </div>
+            <div class="cart-confirmation-buttons">
+                <button class="continue-shopping-btn">Continue Shopping</button>
+                <button class="view-cart-btn">View Cart</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <button id="scrollTopBtn" class="scroll-top-btn" title="Scroll to Top">
+        <i class="fas fa-chevron-up"></i>
+        <span>Scroll to Top</span>
+    </button>
+
+    <!-- Add Coming Soon Modal -->
+    <div id="comingSoonModal" class="modal coming-soon-modal">
+        <div class="modal-content coming-soon-content">
+            <span class="close-modal">&times;</span>
+            <div class="coming-soon-body">
+                <i class="fas fa-tools"></i>
+                <h2>Coming Soon!</h2>
+                <p>We're working hard to bring you an amazing account management experience. Stay tuned!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Price Comparison Modal -->
+    <div id="priceComparisonModal" class="modal price-comparison-modal">
+        <div class="modal-content price-comparison-content">
+            <span class="close-modal">&times;</span>
+            <div class="price-comparison-body">
+                <div class="comparison-header">
+                    <h2>Price Comparison</h2>
+                    <div class="search-box">
+                        <input type="text" id="comparisonSearch" placeholder="Search for a product...">
+                        <button id="compareSearchBtn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="comparison-loading">
+                    <div class="loading-spinner"></div>
+                    <p>Searching prices...</p>
+                </div>
+                <div class="comparison-results">
+                    <div class="product-info">
+                        <img src="" alt="Product Image" id="comparisonProductImage">
+                        <div class="product-details">
+                            <h3 id="comparisonProductName"></h3>
+                            <p class="price" id="comparisonProductPrice"></p>
+                        </div>
+                    </div>
+                    <div class="comparison-grid" id="comparisonGrid">
+                        <!-- Results will be added here dynamically -->
+                    </div>
+                </div>
+                <div class="comparison-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <h3>Product Not Found</h3>
+                    <p>Please try searching for a different product.</p>
+                </div>
+                <div class="search-results" id="searchResults">
+                    <!-- Search results will be added here dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Features Login Modal -->
+    <div id="aiLoginModal" class="modal ai-login-modal">
+      <div class="modal-content">
+        <button class="close-modal" id="closeAiLoginModal" aria-label="Close">&times;</button>
+        <div class="modal-body">
+          <div class="login-header">
+            <i class="fas fa-robot" style="font-size:2.5rem;color:var(--secondary-color);"></i>
+            <h2 style="margin-top:1rem;">AI Features Login</h2>
+            <p style="color:#8892b0;">Sign in to access exclusive AI-powered features</p>
+          </div>
+          <form id="aiLoginForm" class="ai-login-form" autocomplete="off">
+            <div class="form-group">
+              <label for="aiUsername">Username</label>
+              <input type="text" id="aiUsername" name="aiUsername" placeholder="Enter username" required autofocus>
+            </div>
+            <div class="form-group">
+              <label for="aiPassword">Password</label>
+              <input type="password" id="aiPassword" name="aiPassword" placeholder="Enter password" required>
+            </div>
+            <div id="aiLoginError" class="login-error" style="display:none;"></div>
+            <button type="submit" class="cta-button" style="width:100%;margin-top:1.2rem;">Login</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fullscreen Product Image Modal -->
+    <div id="imageFullscreenModal" class="modal">
+        <div class="modal-content" style="max-width:98vw;max-height:98vh;display:flex;align-items:center;justify-content:center;background:transparent;box-shadow:none;">
+            <button class="close-modal" id="closeFullscreenImage" style="position:absolute;top:10px;right:18px;font-size:2rem;color:white;background:rgba(0,0,0,0.4);border:none;border-radius:50%;z-index:2;">&times;</button>
+            <img id="fullscreenProductImage" src="" alt="Product Fullscreen" style="max-width:95vw;max-height:90vh;border-radius:12px;box-shadow:0 4px 32px rgba(0,0,0,0.7);background:#222;">
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 

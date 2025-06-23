@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fish Health Monitor - GHAMart</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="fish-health.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="assets/logo/icon.png" alt="GHAMart Logo">
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html"><i class="fas fa-home"></i>Home</a>
+                <a href="index.html#aiFeatures"><i class="fas fa-robot"></i>AI Features</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="fish-health-container">
+        <h1><i class="fas fa-fish"></i> Fish Health Monitor</h1>
+        
+        <!-- Standards Section -->
+        <section class="standards-grid">
+            <div class="standard-card">
+                <h3><i class="fas fa-thermometer-half"></i> Water Temperature</h3>
+                <ul class="parameter-list">
+                    <li><span>Optimal Range:</span> <span>25-30°C</span></li>
+                    <li><span>Critical Low:</span> <span>Below 20°C</span></li>
+                    <li><span>Critical High:</span> <span>Above 35°C</span></li>
+                </ul>
+            </div>
+
+            <div class="standard-card">
+                <h3><i class="fas fa-vial"></i> pH Levels</h3>
+                <ul class="parameter-list">
+                    <li><span>Optimal Range:</span> <span>6.5-8.5</span></li>
+                    <li><span>Critical Low:</span> <span>Below 6.0</span></li>
+                    <li><span>Critical High:</span> <span>Above 9.0</span></li>
+                </ul>
+            </div>
+
+            <div class="standard-card">
+                <h3><i class="fas fa-wind"></i> Dissolved Oxygen</h3>
+                <ul class="parameter-list">
+                    <li><span>Optimal Range:</span> <span>5-8 mg/L</span></li>
+                    <li><span>Minimum Required:</span> <span>3 mg/L</span></li>
+                    <li><span>Ideal Level:</span> <span>6 mg/L</span></li>
+                </ul>
+            </div>
+
+            <div class="standard-card">
+                <h3><i class="fas fa-flask"></i> Ammonia Levels</h3>
+                <ul class="parameter-list">
+                    <li><span>Safe Level:</span> <span>< 0.02 mg/L</span></li>
+                    <li><span>Warning Level:</span> <span>0.02-0.05 mg/L</span></li>
+                    <li><span>Dangerous Level:</span> <span>> 0.05 mg/L</span></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Input Form -->
+        <section class="input-form">
+            <h2>Enter Your Pond Parameters</h2>
+            <form id="fishHealthForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="temperature">Water Temperature (°C)</label>
+                        <input type="number" id="temperature" name="temperature" step="0.1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ph">pH Level</label>
+                        <input type="number" id="ph" name="ph" step="0.1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="oxygen">Dissolved Oxygen (mg/L)</label>
+                        <input type="number" id="oxygen" name="oxygen" step="0.1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ammonia">Ammonia Level (mg/L)</label>
+                        <input type="number" id="ammonia" name="ammonia" step="0.001" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fishBehavior">Fish Behavior</label>
+                        <select id="fishBehavior" name="fishBehavior" required>
+                            <option value="">Select behavior...</option>
+                            <option value="normal">Normal - Active and eating well</option>
+                            <option value="lethargic">Lethargic - Slow movement</option>
+                            <option value="surface">Gasping at surface</option>
+                            <option value="bottom">Staying at bottom</option>
+                            <option value="erratic">Erratic swimming</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="waterColor">Water Color</label>
+                        <select id="waterColor" name="waterColor" required>
+                            <option value="">Select color...</option>
+                            <option value="clear">Clear</option>
+                            <option value="green">Green</option>
+                            <option value="brown">Brown</option>
+                            <option value="yellow">Yellow</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">Analyze Pond Health</button>
+            </form>
+        </section>
+
+        <!-- Results Section -->
+        <section id="resultsSection" class="results-section">
+            <h2>Analysis Results</h2>
+            <div id="analysisResults"></div>
+        </section>
+    </div>
+
+    <script>
+        document.getElementById('fishHealthForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                temperature: parseFloat(document.getElementById('temperature').value),
+                ph: parseFloat(document.getElementById('ph').value),
+                oxygen: parseFloat(document.getElementById('oxygen').value),
+                ammonia: parseFloat(document.getElementById('ammonia').value),
+                fishBehavior: document.getElementById('fishBehavior').value,
+                waterColor: document.getElementById('waterColor').value
+            };
+
+            analyzePondHealth(formData);
+        });
+
+        function analyzePondHealth(data) {
+            let issues = [];
+            let recommendations = [];
+            let overallStatus = 'good';
+
+            // Temperature Analysis
+            if (data.temperature < 20) {
+                issues.push('Water temperature is too low');
+                recommendations.push('Consider using heaters to raise water temperature');
+                overallStatus = overallStatus === 'good' ? 'warning' : 'danger';
+            } else if (data.temperature > 35) {
+                issues.push('Water temperature is too high');
+                recommendations.push('Increase water aeration and consider adding shade');
+                overallStatus = overallStatus === 'good' ? 'warning' : 'danger';
+            }
+
+            // pH Analysis
+            if (data.ph < 6.0) {
+                issues.push('pH is too acidic');
+                recommendations.push('Add limestone or calcium carbonate to increase pH');
+                overallStatus = 'danger';
+            } else if (data.ph > 9.0) {
+                issues.push('pH is too alkaline');
+                recommendations.push('Add pH reducer or increase water exchange rate');
+                overallStatus = 'danger';
+            } else if (data.ph < 6.5 || data.ph > 8.5) {
+                issues.push('pH is outside optimal range');
+                recommendations.push('Monitor pH closely and prepare for adjustment');
+                overallStatus = overallStatus === 'good' ? 'warning' : 'danger';
+            }
+
+            // Oxygen Analysis
+            if (data.oxygen < 3) {
+                issues.push('Critically low oxygen levels');
+                recommendations.push('Immediately increase aeration');
+                recommendations.push('Consider emergency water exchange');
+                overallStatus = 'danger';
+            } else if (data.oxygen < 5) {
+                issues.push('Low oxygen levels');
+                recommendations.push('Increase aeration');
+                recommendations.push('Reduce feeding temporarily');
+                overallStatus = overallStatus === 'good' ? 'warning' : 'danger';
+            }
+
+            // Ammonia Analysis
+            if (data.ammonia > 0.05) {
+                issues.push('Dangerous ammonia levels');
+                recommendations.push('Perform immediate partial water change');
+                recommendations.push('Stop feeding for 24-48 hours');
+                overallStatus = 'danger';
+            } else if (data.ammonia > 0.02) {
+                issues.push('Elevated ammonia levels');
+                recommendations.push('Increase water exchange rate');
+                recommendations.push('Check filtration system');
+                overallStatus = overallStatus === 'good' ? 'warning' : 'danger';
+            }
+
+            // Behavior Analysis
+            if (data.fishBehavior !== 'normal') {
+                let behaviorIssue = '';
+                switch(data.fishBehavior) {
+                    case 'lethargic':
+                        behaviorIssue = 'Fish showing signs of lethargy';
+                        recommendations.push('Check for signs of disease or parasites');
+                        break;
+                    case 'surface':
+                        behaviorIssue = 'Fish gasping at surface';
+                        recommendations.push('Immediately increase aeration');
+                        recommendations.push('Check for ammonia spike');
+                        break;
+                    case 'bottom':
+                        behaviorIssue = 'Fish staying at bottom';
+                        recommendations.push('Check water temperature');
+                        recommendations.push('Monitor for signs of disease');
+                        break;
+                    case 'erratic':
+                        behaviorIssue = 'Erratic swimming behavior';
+                        recommendations.push('Check for parasites');
+                        recommendations.push('Monitor water quality parameters');
+                        break;
+                }
+                issues.push(behaviorIssue);
+                overallStatus = overallStatus === 'good' ? 'warning' : 'danger';
+            }
+
+            // Water Color Analysis
+            if (data.waterColor !== 'clear') {
+                let colorIssue = '';
+                switch(data.waterColor) {
+                    case 'green':
+                        colorIssue = 'Algae bloom present';
+                        recommendations.push('Reduce sunlight exposure');
+                        recommendations.push('Check nutrient levels');
+                        break;
+                    case 'brown':
+                        colorIssue = 'High turbidity or tannins';
+                        recommendations.push('Check filtration system');
+                        recommendations.push('Consider water change');
+                        break;
+                    case 'yellow':
+                        colorIssue = 'Possible dissolved organic matter';
+                        recommendations.push('Increase water exchange rate');
+                        recommendations.push('Check filter media');
+                        break;
+                }
+                issues.push(colorIssue);
+                overallStatus = overallStatus === 'good' ? 'warning' : 'danger';
+            }
+
+            // If no issues found
+            if (issues.length === 0) {
+                issues.push('All parameters are within normal range');
+                recommendations.push('Continue regular monitoring');
+                recommendations.push('Maintain current management practices');
+            }
+
+            displayResults(overallStatus, issues, recommendations, data);
+        }
+
+        function displayResults(status, issues, recommendations, data) {
+            const resultsSection = document.getElementById('resultsSection');
+            const analysisResults = document.getElementById('analysisResults');
+
+            let statusText = '';
+            let statusClass = '';
+            switch(status) {
+                case 'good':
+                    statusText = 'Healthy';
+                    statusClass = 'status-good';
+                    break;
+                case 'warning':
+                    statusText = 'Requires Attention';
+                    statusClass = 'status-warning';
+                    break;
+                case 'danger':
+                    statusText = 'Critical Issues';
+                    statusClass = 'status-danger';
+                    break;
+            }
+
+            const html = `
+                <div class="result-card">
+                    <div class="status-indicator ${statusClass}">
+                        ${statusText}
+                    </div>
+                    <h3>Current Parameters:</h3>
+                    <ul class="parameter-list">
+                        <li><span>Temperature:</span> <span>${data.temperature}°C</span></li>
+                        <li><span>pH Level:</span> <span>${data.ph}</span></li>
+                        <li><span>Dissolved Oxygen:</span> <span>${data.oxygen} mg/L</span></li>
+                        <li><span>Ammonia Level:</span> <span>${data.ammonia} mg/L</span></li>
+                        <li><span>Fish Behavior:</span> <span>${data.fishBehavior}</span></li>
+                        <li><span>Water Color:</span> <span>${data.waterColor}</span></li>
+                    </ul>
+                    <div class="issues">
+                        <h3>Findings:</h3>
+                        <ul>
+                            ${issues.map(issue => `<li>${issue}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="recommendations">
+                        <h4>Recommendations:</h4>
+                        <ul>
+                            ${recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            `;
+
+            analysisResults.innerHTML = html;
+            resultsSection.classList.add('active');
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html> 

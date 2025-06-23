@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poultry Health Analyzer - GHAMart</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="poultry-health.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Load TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="assets/logo/icon.png" alt="GHAMart Logo">
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html#categories"><i class="fas fa-th"></i>Categories</a>
+                <a href="index.html#products"><i class="fas fa-shopping-bag"></i>Products</a>
+                <a href="index.html#about"><i class="fas fa-info-circle"></i>About</a>
+                <a href="index.html#aiFeatures"><i class="fas fa-robot"></i>AI Features</a>
+            </div>
+            <div class="nav-icons">
+                <a href="index.html#cart" id="cartIcon">
+                    <i class="fas fa-shopping-cart"></i>
+                </a>
+                <a href="#" id="accountBtn">
+                    <i class="fas fa-user"></i>
+                </a>
+                <button class="dark-mode-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>Poultry Health Analyzer</h1>
+        
+        <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+            <p>Click to Upload Poultry Image</p>
+            <p>Supported formats: JPG, PNG</p>
+        </div>
+
+        <input type="file" id="fileInput" accept="image/*" style="display: none">
+        <img id="imagePreview" alt="Preview">
+        
+        <div class="analyzing" id="analyzing">Analyzing image...</div>
+        
+        <div id="results">
+            <h2>Analysis Results:</h2>
+            <div id="predictions"></div>
+        </div>
+
+        <div id="recommendations">
+            <h2>Recommendations:</h2>
+            <ul id="recommendationsList"></ul>
+        </div>
+
+        <div id="modelStatus">Loading AI model...</div>
+    </div>
+
+    <script>
+        let model;
+        const modelStatus = document.getElementById('modelStatus');
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const analyzing = document.getElementById('analyzing');
+
+        // Disable upload area until model is loaded
+        uploadArea.style.opacity = '0.6';
+        uploadArea.style.pointerEvents = 'none';
+        analyzing.style.display = 'none';
+
+        // Load the model
+        async function init() {
+            try {
+                modelStatus.textContent = "Loading AI model...";
+                
+                // The link to your model provided by Teachable Machine export panel
+                const modelURL = "tm-my-image-model/model.json";
+                const metadataURL = "tm-my-image-model/metadata.json";
+
+                // Load the model and metadata
+                model = await tmImage.load(modelURL, metadataURL);
+                
+                console.log("Model loaded successfully");
+                modelStatus.textContent = "AI model ready! You can now upload images.";
+                modelStatus.classList.add('success');
+                
+                // Enable upload area after model is loaded
+                uploadArea.style.opacity = '1';
+                uploadArea.style.pointerEvents = 'auto';
+            } catch (error) {
+                console.error("Error loading model:", error);
+                modelStatus.textContent = "Error loading AI model. Please refresh the page.";
+                modelStatus.classList.add('error');
+            }
+        }
+
+        // Initialize the model when page loads
+        window.addEventListener('DOMContentLoaded', init);
+
+        // Handle file upload
+        fileInput.addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('imagePreview');
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                    // Wait for the image to load before analyzing
+                    img.onload = function() {
+                        analyzePicture(img);
+                    };
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Analyze the uploaded picture
+        async function analyzePicture(imgElement) {
+            if (!model) {
+                alert("Model is not loaded yet. Please wait a moment and try again.");
+                return;
+            }
+
+            // Show analyzing message
+            analyzing.style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('recommendations').style.display = 'none';
+
+            try {
+                // Make prediction
+                const predictions = await model.predict(imgElement);
+                displayResults(predictions);
+            } catch (error) {
+                console.error("Error during prediction:", error);
+                alert("An error occurred during analysis. Please try again.");
+            } finally {
+                analyzing.style.display = 'none';
+            }
+        }
+
+        // Display the results and recommendations
+        function displayResults(predictions) {
+            const predictionsDiv = document.getElementById('predictions');
+            predictionsDiv.innerHTML = '';
+            
+            predictions.forEach(prediction => {
+                const result = document.createElement('p');
+                result.textContent = `${prediction.className}: ${(prediction.probability * 100).toFixed(2)}%`;
+                predictionsDiv.appendChild(result);
+            });
+
+            // Show recommendations based on results
+            const recommendations = getRecommendations(predictions);
+            const recommendationsList = document.getElementById('recommendationsList');
+            recommendationsList.innerHTML = '';
+            
+            recommendations.forEach(rec => {
+                const li = document.createElement('li');
+                li.textContent = rec;
+                recommendationsList.appendChild(li);
+            });
+
+            // Show results and recommendations
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('recommendations').style.display = 'block';
+        }
+
+        // Get recommendations based on prediction
+        function getRecommendations(predictions) {
+            const healthyPrediction = predictions.find(p => p.className.toLowerCase().includes('healthy'));
+            const isHealthy = healthyPrediction?.probability > 0.5;
+
+            if (isHealthy) {
+                return [
+                    "Continue with current feeding and care practices",
+                    "Maintain clean and sanitized living conditions",
+                    "Regular health check-ups",
+                    "Ensure proper vaccination schedule is followed",
+                    "Provide balanced nutrition"
+                ];
+            } else {
+                return [
+                    "Isolate the affected poultry immediately",
+                    "Consult a veterinarian for proper diagnosis",
+                    "Check and improve ventilation in the coop",
+                    "Review and adjust feeding practices",
+                    "Implement stricter biosecurity measures"
+                ];
+            }
+        }
+    </script>
+
+    <!-- Navigation Scripts -->
+    <script>
+        // Mobile Navigation Toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        const navIcons = document.querySelector('.nav-icons');
+
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            navIcons.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        });
+
+        // Coming Soon Modal functionality
+        const comingSoonModal = document.getElementById('comingSoonModal');
+        const accountBtn = document.getElementById('accountBtn');
+
+        function openComingSoonModal() {
+            alert('This feature is coming soon!');
+        }
+
+        // Event listener for account button
+        accountBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openComingSoonModal();
+        });
+
+        // Dark Mode Toggle
+        const darkModeToggle = document.querySelector('.dark-mode-toggle');
+        const body = document.body;
+
+        darkModeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            const icon = darkModeToggle.querySelector('i');
+            if (body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        });
+    </script>
+
+    <!-- Poultry Health Chatbot Widget -->
+    <div id="chatbot-widget" style="position: fixed; bottom: 24px; right: 24px; width: 340px; max-width: 90vw; z-index: 9999; font-family: Arial, sans-serif;">
+      <div id="chatbot-header" style="background: var(--primary-color); color: var(--secondary-color); padding: 12px 16px; border-radius: 12px 12px 0 0; font-weight: bold; display: flex; align-items: center; justify-content: space-between;">
+        <span style="cursor:pointer;">🤖 GHAMart Bot</span>
+        <button id="chatbot-speaker" title="Mute/Unmute Bot Voice" style="background: transparent; color: var(--secondary-color); border: none; font-size: 20px; cursor: pointer; margin-left: 8px;">
+          <i class="fas fa-volume-up" id="chatbot-speaker-icon"></i>
+        </button>
+      </div>
+      <div id="chatbot-body" style="background: var(--card-bg); border: 1px solid var(--secondary-color); border-top: none; border-radius: 0 0 12px 12px; display: none; flex-direction: column; height: 380px; max-height: 60vh;">
+        <div id="chatbot-messages" style="flex: 1; padding: 12px; overflow-y: auto; font-size: 15px;"></div>
+        <div style="display: flex; border-top: 1px solid var(--secondary-color); align-items: center; background: var(--card-bg);">
+          <input id="chatbot-input" type="text" placeholder="Ask about poultry health..." style="flex: 1; border: none; padding: 10px; font-size: 15px; outline: none; background: var(--light-bg); color: var(--text-color);">
+          <button id="chatbot-mic" title="Hold to Speak" style="background: var(--card-bg); color: var(--secondary-color); border: none; font-size: 20px; cursor: pointer; margin-right: 4px;">
+            <i class="fas fa-microphone" id="chatbot-mic-icon"></i>
+          </button>
+          <button id="chatbot-send" style="background: var(--secondary-color); color: #fff; border: none; padding: 0 18px; font-size: 16px; cursor: pointer;">Send</button>
+        </div>
+      </div>
+    </div>
+    <script>
+      // Chatbot open/close toggle
+      const chatbotHeader = document.getElementById('chatbot-header');
+      const chatbotBody = document.getElementById('chatbot-body');
+      const chatbotMessages = document.getElementById('chatbot-messages');
+      const chatbotInput = document.getElementById('chatbot-input');
+      const chatbotSend = document.getElementById('chatbot-send');
+      const chatbotMic = document.getElementById('chatbot-mic');
+      const chatbotSpeaker = document.getElementById('chatbot-speaker');
+      const chatbotSpeakerIcon = document.getElementById('chatbot-speaker-icon');
+      const chatbotMicIcon = document.getElementById('chatbot-mic-icon');
+      let isFirstOpen = true;
+      let botVoiceEnabled = true;
+      chatbotSpeaker.onclick = function() {
+        botVoiceEnabled = !botVoiceEnabled;
+        chatbotSpeakerIcon.className = botVoiceEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+      };
+      function speak(text) {
+        if (botVoiceEnabled && 'speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const utter = new SpeechSynthesisUtterance(text);
+          utter.lang = 'en-US';
+          utter.rate = 1;
+          window.speechSynthesis.speak(utter);
+        }
+      }
+      function welcomeMessage() {
+        const botName = "GHAMart Bot";
+        const welcome = "Welcome to GHAMart Bot! What inquiries would you like to make about poultries today?";
+        speak(botName);
+        setTimeout(() => {
+          appendMessage(welcome, 'bot');
+          speak(welcome);
+        }, 800); // 800ms pause after name
+      }
+      chatbotHeader.onclick = () => {
+        if (chatbotBody.style.display === 'flex') {
+          chatbotBody.style.display = 'none';
+        } else {
+          chatbotBody.style.display = 'flex';
+          if (isFirstOpen) {
+            setTimeout(welcomeMessage, 300);
+            isFirstOpen = false;
+          }
+        }
+      };
+      // Minimize (collapse) chatbot by default
+      chatbotBody.style.display = 'none';
+      // Chatbot logic
+      function appendMessage(text, sender) {
+        const msg = document.createElement('div');
+        msg.style.margin = '8px 0';
+        msg.style.display = 'flex';
+        msg.style.justifyContent = sender === 'user' ? 'flex-end' : 'flex-start';
+        // Format bot text: support line breaks and simple lists
+        let formattedText = text
+          .replace(/\n/g, '<br>')
+          .replace(/\* (.+)/g, '<li>$1</li>');
+        if (/<li>/.test(formattedText)) {
+          formattedText = '<ul style=\"margin: 0 0 0 18px; padding: 0;\">' + formattedText + '</ul>';
+        }
+        const bubble = document.createElement('span');
+        bubble.style.display = 'inline-block';
+        bubble.style.maxWidth = '80%';
+        bubble.style.padding = '10px 15px';
+        bubble.style.borderRadius = '12px';
+        bubble.style.fontSize = '15px';
+        bubble.style.wordBreak = 'break-word';
+        if (sender === 'user') {
+          bubble.style.background = 'var(--secondary-color)';
+          bubble.style.color = '#fff';
+          bubble.style.textAlign = 'right';
+        } else {
+          bubble.style.background = 'var(--primary-color)';
+          bubble.style.color = 'var(--secondary-color)';
+          bubble.style.textAlign = 'left';
+          bubble.style.boxShadow = '0 2px 8px var(--shadow-color)';
+        }
+        bubble.innerHTML = formattedText;
+        msg.appendChild(bubble);
+        chatbotMessages.appendChild(msg);
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        // Speak bot replies
+        if (sender === 'bot' && text && !text.startsWith('Thinking')) {
+          speak(text.replace(/<[^>]+>/g, ''));
+        }
+      }
+      async function fetchCohereResponse(userMsg) {
+        appendMessage('Thinking...', 'bot');
+        try {
+          const response = await fetch('https://api.cohere.ai/v1/chat', {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Bearer 8jJLhDfQ7K7b8cqhHNQ3ntzmUXYTXq22mTTusqQQ',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: 'command-r-plus',
+              message: userMsg,
+              chat_history: [],
+              connectors: [],
+              temperature: 0.4,
+              max_tokens: 80,
+              prompt_truncation: 'AUTO',
+              documents: [],
+              preamble: 'You are a helpful, friendly, and knowledgeable assistant for poultry health, poultry farming, feeding, and diseases. Only answer questions related to poultry. If asked about something else, politely redirect to poultry topics.'
+            })
+          });
+          const data = await response.json();
+          // Remove 'Thinking...' message
+          chatbotMessages.removeChild(chatbotMessages.lastChild);
+          if (data.text) {
+            appendMessage(data.text, 'bot');
+          } else {
+            appendMessage('Sorry, I could not get a response. Please try again.', 'bot');
+          }
+        } catch (e) {
+          chatbotMessages.removeChild(chatbotMessages.lastChild);
+          appendMessage('Error connecting to chatbot service.', 'bot');
+        }
+      }
+      function sendChat() {
+        const userMsg = chatbotInput.value.trim();
+        if (!userMsg) return;
+        if (userMsg.length > 120) {
+          appendMessage('Please keep your question under 120 characters.', 'bot');
+          return;
+        }
+        appendMessage(userMsg, 'user');
+        chatbotInput.value = '';
+        fetchCohereResponse(userMsg);
+      }
+      chatbotSend.onclick = sendChat;
+      chatbotInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') sendChat();
+      });
+      // Voice input (speech-to-text) with long-press and live update
+      let recognition;
+      let recognizing = false;
+      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = true;
+        recognition.maxAlternatives = 1;
+        let liveTranscript = '';
+        chatbotMic.onmousedown = function() {
+          recognition.start();
+          recognizing = true;
+          chatbotMicIcon.style.color = '#d32f2f'; // red
+        };
+        chatbotMic.onmouseup = chatbotMic.onmouseleave = function() {
+          if (recognizing) {
+            recognition.stop();
+            recognizing = false;
+            chatbotMicIcon.style.color = '#388e3c';
+          }
+        };
+        recognition.onresult = function(event) {
+          let interim = '';
+          for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+              liveTranscript += event.results[i][0].transcript;
+            } else {
+              interim += event.results[i][0].transcript;
+            }
+          }
+          chatbotInput.value = (liveTranscript + interim).trim();
+        };
+        recognition.onend = function() {
+          chatbotMicIcon.style.color = '#388e3c';
+          if (chatbotInput.value.trim()) {
+            sendChat();
+          }
+          liveTranscript = '';
+        };
+        recognition.onerror = function() {
+          chatbotMicIcon.style.color = '#388e3c';
+          liveTranscript = '';
+        };
+      } else {
+        chatbotMic.style.display = 'none';
+      }
+    </script>
+</body>
+</html>

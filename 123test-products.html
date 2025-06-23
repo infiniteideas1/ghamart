@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Test</title>
+    <style>
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 1rem;
+        }
+        .product-card {
+            border: 1px solid #ccc;
+            padding: 1rem;
+            text-align: center;
+        }
+        .product-card img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="products">
+        <h2>Products</h2>
+        <div class="product-grid" id="productGrid"></div>
+    </div>
+
+    <script>
+        // Product Data
+        const products = {
+            art: [
+                { name: 'Pencil Work', price: '₦1,000', image: 'assets/Art/Pencil work 1000.jpg', description: 'Beautiful hand-drawn pencil artwork.' },
+                { name: 'Flower Vase', price: '₦2,000', image: 'assets/Art/Flower vase 2000.jpg', description: 'Handcrafted decorative flower vase.' }
+            ],
+            diy: [
+                { name: 'Hair Ruffles', price: '₦1,000', image: 'assets/DIY/Hair ruffles 1000.jpg', description: 'Handmade hair accessories for any occasion.' },
+                { name: 'Apron', price: '₦2,000', image: 'assets/DIY/Apron 2000.jpg', description: 'Stylish and practical handmade aprons.' }
+            ]
+        };
+
+        function createProductCard(product) {
+            console.log('Creating card for:', product.name);
+            return `
+                <div class="product-card">
+                    <img src="${product.image}" alt="${product.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22><rect width=%22100%22 height=%22100%22 fill=%22%23ddd%22/></svg>'">
+                    <h3>${product.name}</h3>
+                    <p class="price">${product.price}</p>
+                </div>
+            `;
+        }
+
+        function loadProducts() {
+            console.log('Loading products...');
+            const productGrid = document.getElementById('productGrid');
+            if (!productGrid) {
+                console.error('Product grid not found!');
+                return;
+            }
+
+            const allProducts = Object.values(products).flat();
+            console.log('Total products:', allProducts.length);
+            
+            productGrid.innerHTML = '';
+            allProducts.forEach(product => {
+                productGrid.innerHTML += createProductCard(product);
+            });
+        }
+
+        // Load products when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded');
+            loadProducts();
+        });
+    </script>
+</body>
+</html> 
